@@ -208,17 +208,26 @@ function buildVCard() {
   var first = clean('f-first'), last = clean('f-last');
   var title = clean('f-title'), email = clean('f-email');
   var phone = clean('f-phone'), mobile = clean('f-mobile');
-  var office = clean('f-office'), li = clean('f-li');
-  var vc = 'BEGIN:VCARD\nVERSION:3.0\n';
-  vc += 'FN:' + first + ' ' + last + '\n';
-  vc += 'N:' + last + ';' + first + ';;;\n';
-  vc += 'ORG:TSCG\n';
-  if (title)  vc += 'TITLE:' + title + '\n';
-  if (email)  vc += 'EMAIL;TYPE=WORK:' + email + '\n';
-  if (phone)  vc += 'TEL;TYPE=WORK,VOICE:' + phone + '\n';
-  if (mobile) vc += 'TEL;TYPE=CELL:' + mobile + '\n';
-  if (li) { var u = li.indexOf('http') === 0 ? li : 'https://' + li; vc += 'URL:' + u + '\n'; }
-  vc += 'END:VCARD';
+  var li = clean('f-li');
+  // Use 
+ line endings per vCard spec - required for iOS compatibility
+  var CRLF = '
+';
+  var vc = 'BEGIN:VCARD' + CRLF;
+  vc += 'VERSION:3.0' + CRLF;
+  vc += 'FN:' + first + ' ' + last + CRLF;
+  // N field: Last;First;Middle;Prefix;Suffix (5 components, 4 semicolons)
+  vc += 'N:' + last + ';' + first + ';;;' + CRLF;
+  vc += 'ORG:TSCG' + CRLF;
+  if (title)  vc += 'TITLE:' + title + CRLF;
+  if (email)  vc += 'EMAIL;TYPE=INTERNET,WORK:' + email + CRLF;
+  if (phone)  vc += 'TEL;TYPE=WORK,VOICE:' + phone + CRLF;
+  if (mobile) vc += 'TEL;TYPE=CELL,VOICE:' + mobile + CRLF;
+  if (li) {
+    var u = li.indexOf('http') === 0 ? li : 'https://' + li;
+    vc += 'URL;TYPE=WORK:' + u + CRLF;
+  }
+  vc += 'END:VCARD' + CRLF;
   return vc;
 }
 
