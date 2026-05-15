@@ -210,8 +210,7 @@ function buildVCard() {
   var mobile = clean('f-mobile') || clean('f-phone');
   // Minimal vCard - only what iOS needs to recognize as a contact
   // CRLF line endings are required by the vCard spec for iOS
-  var R = '
-';
+  var R = '\r\n';
   var vc = 'BEGIN:VCARD' + R;
   vc += 'VERSION:3.0' + R;
   vc += 'FN:' + first + ' ' + last + R;
