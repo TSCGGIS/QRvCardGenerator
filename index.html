@@ -206,28 +206,20 @@ function clearErr() { document.getElementById('err-box').classList.remove('visib
 
 function buildVCard() {
   var first = clean('f-first'), last = clean('f-last');
-  var title = clean('f-title'), email = clean('f-email');
-  var phone = clean('f-phone'), mobile = clean('f-mobile');
-  var li = clean('f-li');
-  // Use 
- line endings per vCard spec - required for iOS compatibility
-  var CRLF = '
+  var email = clean('f-email');
+  var mobile = clean('f-mobile') || clean('f-phone');
+  // Minimal vCard - only what iOS needs to recognize as a contact
+  // CRLF line endings are required by the vCard spec for iOS
+  var R = '
 ';
-  var vc = 'BEGIN:VCARD' + CRLF;
-  vc += 'VERSION:3.0' + CRLF;
-  vc += 'FN:' + first + ' ' + last + CRLF;
-  // N field: Last;First;Middle;Prefix;Suffix (5 components, 4 semicolons)
-  vc += 'N:' + last + ';' + first + ';;;' + CRLF;
-  vc += 'ORG:TSCG' + CRLF;
-  if (title)  vc += 'TITLE:' + title + CRLF;
-  if (email)  vc += 'EMAIL;TYPE=INTERNET,WORK:' + email + CRLF;
-  if (phone)  vc += 'TEL;TYPE=WORK,VOICE:' + phone + CRLF;
-  if (mobile) vc += 'TEL;TYPE=CELL,VOICE:' + mobile + CRLF;
-  if (li) {
-    var u = li.indexOf('http') === 0 ? li : 'https://' + li;
-    vc += 'URL;TYPE=WORK:' + u + CRLF;
-  }
-  vc += 'END:VCARD' + CRLF;
+  var vc = 'BEGIN:VCARD' + R;
+  vc += 'VERSION:3.0' + R;
+  vc += 'FN:' + first + ' ' + last + R;
+  vc += 'N:' + last + ';' + first + ';;;' + R;
+  vc += 'ORG:TSCG' + R;
+  if (email)  vc += 'EMAIL;TYPE=INTERNET,WORK:' + email + R;
+  if (mobile) vc += 'TEL;TYPE=CELL,VOICE:' + mobile + R;
+  vc += 'END:VCARD' + R;
   return vc;
 }
 
@@ -246,11 +238,15 @@ function generateQR() {
   renderDiv.innerHTML = '';
 
   var vcard = buildVCard();
-  // L error correction: less dense matrix = much more scannable on iPhone
-  var typeNum = 12; // supports up to 367 chars at L level
-  if (vcard.length > 367) typeNum = 14;
-  if (vcard.length > 458) typeNum = 16;
-  if (vcard.length > 586) typeNum = 18;
+  // L error correction - minimal vCard keeps this at type 6-8 (41x41 to 49x49 matrix)
+  // which is very easy for iPhone cameras to read
+  var typeNum = 6;
+  if (vcard.length > 195) typeNum = 7;
+  if (vcard.length > 224) typeNum = 8;
+  if (vcard.length > 279) typeNum = 9;
+  if (vcard.length > 335) typeNum = 10;
+  if (vcard.length > 395) typeNum = 11;
+  if (vcard.length > 468) typeNum = 12;
   try {
     var qr = new qrcode.QRClass(typeNum, QRErrorCorrectLevel.L);
     qr.addData(vcard);
