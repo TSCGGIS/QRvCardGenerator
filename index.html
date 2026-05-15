@@ -217,9 +217,7 @@ function buildVCard() {
   if (email)  vc += 'EMAIL;TYPE=WORK:' + email + '\n';
   if (phone)  vc += 'TEL;TYPE=WORK,VOICE:' + phone + '\n';
   if (mobile) vc += 'TEL;TYPE=CELL:' + mobile + '\n';
-  if (office) vc += 'ADR;TYPE=WORK:;;' + office + ';;;;\n';
   if (li) { var u = li.indexOf('http') === 0 ? li : 'https://' + li; vc += 'URL:' + u + '\n'; }
-  vc += 'URL:https://www.tscg.com\n';
   vc += 'END:VCARD';
   return vc;
 }
@@ -239,12 +237,13 @@ function generateQR() {
   renderDiv.innerHTML = '';
 
   var vcard = buildVCard();
-  var typeNum = 14; // supports up to 362 chars at M level; bump if needed
-  if (vcard.length > 362) typeNum = 16;
-  if (vcard.length > 450) typeNum = 18;
-  if (vcard.length > 560) typeNum = 20;
+  // L error correction: less dense matrix = much more scannable on iPhone
+  var typeNum = 12; // supports up to 367 chars at L level
+  if (vcard.length > 367) typeNum = 14;
+  if (vcard.length > 458) typeNum = 16;
+  if (vcard.length > 586) typeNum = 18;
   try {
-    var qr = new qrcode.QRClass(typeNum, QRErrorCorrectLevel.M);
+    var qr = new qrcode.QRClass(typeNum, QRErrorCorrectLevel.L);
     qr.addData(vcard);
     qr.make();
     var n = qr.getModuleCount();
