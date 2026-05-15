@@ -91,8 +91,6 @@ footer{text-align:center;font-size:11px;color:var(--gray);padding:18px;border-to
     <div class="grid2" style="margin-bottom:20px">
       <div class="field"><label>Work email *</label><input id="f-email" type="email" placeholder="jsmith@tscg.com" autocomplete="email"></div>
       <div class="field"><label>Mobile / cell *</label><input id="f-mobile" type="tel" placeholder="+1 (404) 555-0101" autocomplete="tel"></div>
-      <div class="field"><label>Direct / office phone</label><input id="f-phone" type="tel" placeholder="+1 (404) 555-0100"></div>
-      <div class="field"><label>LinkedIn URL</label><input id="f-li" type="url" placeholder="linkedin.com/in/jsmith"></div>
     </div>
     <div id="errbox" class="errbox"></div>
     <button id="btngo" class="btngo" onclick="go()">
@@ -135,8 +133,7 @@ function clrErr(){document.getElementById('errbox').classList.remove('on');}
 
 function vcard(){
   var R='\r\n';
-  var first=g('f-first'),last=g('f-last'),title=g('f-title'),email=g('f-email');
-  var mobile=g('f-mobile'),phone=g('f-phone'),li=g('f-li');
+  var first=g('f-first'),last=g('f-last'),title=g('f-title'),email=g('f-email'),mobile=g('f-mobile');
   var v='BEGIN:VCARD'+R+'VERSION:3.0'+R;
   v+='FN:'+first+' '+last+R;
   v+='N:'+last+';'+first+';;;'+R;
@@ -144,8 +141,6 @@ function vcard(){
   if(title) v+='TITLE:'+title+R;
   if(email) v+='EMAIL;TYPE=INTERNET,WORK:'+email+R;
   if(mobile) v+='TEL;TYPE=CELL,VOICE:'+mobile+R;
-  if(phone) v+='TEL;TYPE=WORK,VOICE:'+phone+R;
-  if(li){var u=li.indexOf('http')===0?li:'https://'+li;v+='URL;TYPE=WORK:'+u+R;}
   v+='END:VCARD'+R;
   return v;
 }
